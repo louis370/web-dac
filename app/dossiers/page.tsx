@@ -6,6 +6,8 @@ import {
   AlertCircle, Calendar, ArrowRight, BarChart3 
 } from 'lucide-react';
 import DossiersLayout from '@/components/layouts/DossiersLayout';
+import AppLayout from '@/components/layouts/AppLayout';
+import BreadCumbPage from '@/components/ui/BreadCumbPage';
 
 export default function DashboardDossiers() {
   
@@ -52,12 +54,12 @@ export default function DashboardDossiers() {
   );
 
   return (
-    <DossiersLayout
-      pageTitle="Bonjour, M. Kasongo" 
+    <AppLayout
+      title="Bonjour, M. Kasongo"
       subtitle="Voici l'état actuel des inscriptions pour l'année académique 2024-2025."
-      headerAction={HeaderAction}
     >
-      
+
+       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {stats.map((stat, i) => (
           <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center gap-6">
@@ -165,6 +167,6 @@ export default function DashboardDossiers() {
         </p>
       </footer>
 
-    </DossiersLayout>
+    </AppLayout>
   );
 }

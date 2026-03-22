@@ -1,5 +1,6 @@
 "use client";
 
+import AppLayout from '@/components/layouts/AppLayout';
 import DossiersLayout from '@/components/layouts/DossiersLayout';
 import { 
   FileText, CheckCircle2, XCircle, Eye, 
@@ -9,9 +10,9 @@ import {
 export default function DossierDetailsPage({ params }: { params: { id: string } }) {
   
   return (
-    <DossiersLayout 
-      pageTitle="Détails du Dossier - #DAC-2024-001" 
-      subtitle="Dossiers Étudiants > Détails du Dossier"
+    <AppLayout 
+      // pageTitle="Détails du Dossier - #DAC-2024-001" 
+      // subtitle="Dossiers Étudiants > Détails du Dossier"
     >
       <div className="flex flex-col lg:flex-row gap-8">
         
@@ -167,6 +168,6 @@ export default function DossierDetailsPage({ params }: { params: { id: string } 
           © 2024 DAC - Portail Agent • Direction des Affaires Académiques
         </p>
       </footer>
-    </DossiersLayout>
+    </AppLayout>
   );
 }

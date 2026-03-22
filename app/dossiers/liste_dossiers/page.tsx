@@ -4,6 +4,8 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, AlertCircle, GraduationCap, Filter, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import DossiersLayout from '@/components/layouts/DossiersLayout';
+import AppLayout from '@/components/layouts/AppLayout';
+import BreadCumbPage from '@/components/ui/BreadCumbPage';
 
 const mockDossiers = [
   { id: 1, date: "12/10/2023", isUrgent: true, nom: "Dupont", prenom: "Jean", faculte: "Médecine", promo: "2024", statut: "À vérifier" },
@@ -60,12 +62,9 @@ export default function ListeDossiersPage() {
   );
 
   return (
-    <DossiersLayout 
-      pageTitle="Dossiers à traiter" 
-      subtitle={`${filteredDossiers.length} dossiers en attente de vérification`}
-      headerAction={HeaderAction}
+    <AppLayout pageTitle='Dossiers à traiter' title={'Dossiers à traiter'} subtitle={`${filteredDossiers.length} dossiers en attente de vérification`}
     >
-      
+
       <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col xl:flex-row gap-3 mb-6">
         
         <div className="flex-1 flex items-center bg-gray-50/50 rounded-xl px-4 focus-within:bg-gray-50 transition-colors">
@@ -241,6 +240,6 @@ export default function ListeDossiersPage() {
           © 2024 DAC - Portail Agent • Direction des Affaires Académiques
         </p>
       </footer>
-    </DossiersLayout>
+    </AppLayout>
   );
 }

@@ -2,7 +2,7 @@
 @import "flowbite-react/plugin/tailwindcss";
 @source "../.flowbite-react/class-list.json";
 
-@plugin "flowbite/plugin"; 
+@plugin "flowbite/plugin";
 @source "../node_modules/flowbite-react/dist/esm/**/*.mjs";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -26,10 +26,24 @@
   }
 }
 
-body {
+/* body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+} */
+
+body {
+  font-family: "Inter", sans-serif;
+}
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+.bg-primary-gradient {
+  background: linear-gradient(135deg, #0057bd 0%, #6e9fff 100%);
 }
 
 @theme {
@@ -38,7 +52,6 @@ body {
   --color-hover: #d600d6;
   --color-success: #22c55e;
 }
-
 
 /* Style pour une scrollbar discrète */
 .sidebar-scroll::-webkit-scrollbar {

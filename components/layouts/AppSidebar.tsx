@@ -7,17 +7,19 @@ import { HiChartPie, HiUser, HiShoppingBag, HiArrowSmRight, HiUsers } from "reac
 import { RiMenuFoldLine } from "react-icons/ri"; 
 import SidebarItemCustomise from "../ui/SidebarItemCustomise";
 import { usePathname } from "next/navigation";
-import { icons } from "lucide-react";
+import { FolderOpen, icons, LayoutDashboard } from "lucide-react";
 
 export function AppSidebar({isCollapsed,}:{isCollapsed:boolean}) {
   const pathname = usePathname()
   const liens =[
     {title:"Tableau de bord", link:'/', icon:HiChartPie},
-    {title:"Agents universitaire", link:'/admins/users', icon:HiUsers}
+    {title:"Agents universitaire", link:'/admins/users', icon:HiUsers},
+    {title:"Tableau de bord", link:'/dossiers', icon:LayoutDashboard},
+    {title:"Dossiers à traiter", link:'/dossiers/liste_dossiers', icon:FolderOpen}
   ]
   return (
-    <div className={`${isCollapsed ? 'w-16' : 'w-64'} fixed left-0 top-0 h-screen flex flex-col transition-all duration-500 border-r dark:bg-background border-gray-300`}>
-       <div className="py-3 border-b border-gray-300 bg-white">
+    <aside className={`${isCollapsed ? 'w-20' : 'w-64'} fixed h-screen transition-all duration-400 bg-white/90 backdrop-blur-md shadow-sm `}>
+       <div className="py-3">
           <div className="flex justify-center items-center gap-1 ">
                     <Image src={"/favicon.svg"} alt={""} 
                     width={60}
@@ -26,31 +28,20 @@ export function AppSidebar({isCollapsed,}:{isCollapsed:boolean}) {
                     className="rounded-2xl"
                     />
              <div className={`flex flex-col transition-all duration-500 ${isCollapsed? 'hidden':''}`}>
-                <h6 className={`text-xl font-bold text-heading transition-all duration-500 ${isCollapsed? 'hidden':''}`}>DAC Congo</h6>
-                <p className={`text-sm text-heading text-center mt-1 transition-all duration-500 ${isCollapsed? 'hidden':''}`}>Portail académique</p>
+              <h1 className="font-black text-xl leading-none tracking-tight">DAC Congo</h1>
+            <p className="text-[10px] font-bold text-[#ff00ff] uppercase tracking-widest mt-1">Portail academique</p>
             </div>
               
           </div>
           
        </div> 
-    <div className="h-full overflow-x-hidden overflow-y-auto pb-10 w-full bg-white">
-        <Sidebar aria-label="Dashboard Sidebar" collapsed={isCollapsed} className="w-full" theme={{
-          root: {
-            base: "h-full",
-            inner: "h-full overflow-y-auto overflow-x-hidden bg-white px-3 py-4" // <--- TA COULEUR ICI
-              }
-        }}>
-          <SidebarItems  className="transition-all duration-300 group-hover:bg-secondary">
-          <SidebarItemGroup className="justify-center items-center h-full border-t-0 group-hover:bg-secondary">
-              {
+    <div className="h-full flex flex-col gap-3 px-4 py-6 overflow-x-hidden overflow-y-auto w-full">
+        {
                 liens.map((l)=>
-            <SidebarItemCustomise icon={l.icon} href={l.link} label={l.title} isLinked={pathname==l.link}/>)
+            <SidebarItemCustomise isCollapsed={isCollapsed} icon={l.icon} href={l.link} label={l.title} isLinked={pathname==l.link}/>)
               }
-             </SidebarItemGroup>
-      </SidebarItems>
-     </Sidebar>
     </div>
-       </div>
+       </aside>
 
   
     
