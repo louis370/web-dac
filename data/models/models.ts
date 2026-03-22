@@ -28,5 +28,5 @@ export enum UserStatus {
 
 export enum Sexe {
   MALE,
-  FAMALE,
+  FEMALE,
 }
