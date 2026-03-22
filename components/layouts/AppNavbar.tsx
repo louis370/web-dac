@@ -7,9 +7,9 @@ import { RiMenuFold2Line, RiMenuFoldLine } from "react-icons/ri";
 
 export function AppNavbar({onChangeCollapsed, isCollapsed}:{onChangeCollapsed:()=>void, isCollapsed:boolean}) {
   return (
-    <Navbar fluid className={`fixed top-0 end-0 ${isCollapsed ? 'left-16' : 'left-64'} border-b border-gray-300 transition-all duration-500`}>
-     <div className="flex justify-between w-full h-16 items-center align-middle">
-       <NavbarBrand className="gap-3">
+    <div className={`fixed top-0 end-0 ${isCollapsed ? 'left-20' : 'left-64'} h-20 align-middle z-40 border-r bg-white/90 backdrop-blur-md border-b border-slate-200/15 shadow-sm transition-all duration-400`}>
+     <div className="flex pl-4 pe-8 justify-between w-full h-full  items-center align-middle">
+       <div className="flex gap-2 justify-center items-center">
        {!isCollapsed ?  <RiMenuFoldLine size={25} onClick={onChangeCollapsed} className="cursor-pointer"/> :
         <RiMenuFold2Line size={25} onClick={onChangeCollapsed} className="cursor-pointer"/>}
         <Image
@@ -20,7 +20,7 @@ export function AppNavbar({onChangeCollapsed, isCollapsed}:{onChangeCollapsed:()
         className="rounded-xl"
         />
        <h6 className="text-3xl text-heading font-bold">ISIPA</h6>
-      </NavbarBrand>
+      </div>
      <div className="flex gap-3 items-center pr-4">
       <div className="flex gap-3">
         <a href="#"><IoMdSettings size={23}/></a>
@@ -61,7 +61,7 @@ export function AppNavbar({onChangeCollapsed, isCollapsed}:{onChangeCollapsed:()
      </div>
      </div>
       
-    </Navbar>
+    </div>
    
   );
 }
