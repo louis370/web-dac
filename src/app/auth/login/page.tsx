@@ -1,15 +1,16 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Mail, Lock, GraduationCap, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import ImageLogin from "../../Asset/images/ImageLogin.jpg";
-import avatar1 from "../../Asset/images/avatar1.jpg";
-import avatar2 from "../../Asset/images/avatar2.jpg";
-import avatar3 from "../../Asset/images/avatar3.jpg";
-import LogoDac from "../../Asset/images/favicon.svg";
-import { useState } from "react";
+import ImageLogin from "@/assets/images/image-login.jpg";
+import avatar1 from "@/assets/images/avatar1.jpg";
+import avatar2 from "@/assets/images/avatar2.jpg";
+import avatar3 from "@/assets/images/avatar3.jpg";
+import LogoDac from "@/assets/images/favicon.svg";
+import Link from "next/link";
 
-export default function LoginForm() {
+
+export default function page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -42,14 +43,14 @@ export default function LoginForm() {
     }
   };
   return (
-    <div className="bg-white w-full h-screen flex items-center justify-center overflow-y-hidden">
-      <div className="bg-white shadow-2xl w-full max-w-5xl h-[90vh] rounded-2xl flex overflow-hidden">
-        <div className="relative w-1/2 h-full rounded-l-2xl overflow-hidden">
+    <div className="bg-white w-full flex items-center justify-center overflow-y-hidden my-8">
+      <div className="bg-white shadow-sm w-full max-w-4xl rounded-2xl flex overflow-hidden">
+        <div className="relative w-0 md:w-1/2 hidden md:flex rounded-l-2xl overflow-hidden">
           <Image
             src={ImageLogin}
-            alt="ImageLogin"
+            alt="Image login"
             fill
-            className="object-cover  rounded-l-2xl"
+            className="object-cover rounded-l-2xl"
           />
           <div className="absolute inset-0 bg-blue-700/50 w-full rounded-l-2xl flex flex-col items-center justify-center text-white p-8">
             <h1 className="font-bold text-4xl">
@@ -95,7 +96,7 @@ export default function LoginForm() {
         </div>
         <form
           onSubmit={handleSubmit}
-          className="w-1/2 h-full flex flex-col items-center justify-center bg-white"
+          className="w-full md:w-1/2 h-full flex flex-col items-center justify-center bg-white"
         >
           <div className="w-full p-4 mt-4 flex items-center justify-around">
             <Image src={LogoDac} alt="DAC" width={70} height={50} />
@@ -111,10 +112,10 @@ export default function LoginForm() {
           </div>
           <div className="w-full h-full max-w-md p-8">
             <div className="flex items-center gap-2 text-primary mb-4">
-              <h2 className="text-2xl font-bold">Welcome back</h2>
+              <h2 className="text-2xl font-bold">Content de vous revoir</h2>
             </div>
             <p className="mb-6 text-sm text-gray-600">
-              Please enter your credentials to access your dashboard.
+              Veuillez saisir vos identifiants pour accéder à votre tableau de bord.
             </p>
             {error && (
               <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -123,7 +124,7 @@ export default function LoginForm() {
             )}
             <div className="space-y-2">
               <label className="text-sm font-bold text-gray-700 ml-1">
-                Email
+                Adresse email
               </label>
               <div className="flex items-center bg-gray-400/10 rounded-2xl px-5 focus-within:ring-2 focus-within:ring-primary/40 transition-all">
                 <Mail size={20} className="text-gray-500 shrink-0" />
@@ -139,14 +140,14 @@ export default function LoginForm() {
             <div className="space-y-2 mt-4">
               <div className="flex justify-between items-center w-full">
                 <label className="text-sm font-bold text-gray-700 ml-1">
-                  Password
+                  Mot de passe
                 </label>
-                <a
-                  href="/auth/verify"
+                <Link
+                  href="/auth/reset-password"
                   className="text-sm text-secondary hover:underline"
                 >
-                  Forgot password?
-                </a>
+                  Mot de passe oublié?
+                </Link>
               </div>
               <div className="flex items-center bg-gray-400/10 rounded-2xl px-5 focus-within:ring-2 focus-within:ring-primary/40 transition-all">
                 <Lock size={20} className="text-gray-500 shrink-0" />
@@ -173,9 +174,9 @@ export default function LoginForm() {
               </div>
             </div>
             <div className="mt-4">
-              <input type="checkbox" name="remember" id="remember" />
+              <input type="checkbox" name="remember" id="remember" className="appearance-none hover checked:bg-primary/80 focus:outline-none rounded-md"/>
               <label htmlFor="remember" className="text-sm text-gray-600 ml-2">
-                Keep me logged in for 30 days
+                Me garder connecté(e) pour 60 jours
               </label>
             </div>
             <button
@@ -187,13 +188,13 @@ export default function LoginForm() {
             </button>
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 mt-2">
-                Don't have an account?{" "}
-                <a
-                  href="/auth/register"
+                Vous n'avez pas un compte?{" "}
+                <Link
+                  href="#"
                   className="text-secondary hover:underline"
                 >
-                  Contact your administrator
-                </a>
+                  Contacter l'administrateur
+                </Link>
               </p>
             </div>
           </div>

@@ -1,8 +1,11 @@
 @import "tailwindcss";
+
+@source "../../.flowbite-react/class-list.json";
 @import "flowbite-react/plugin/tailwindcss";
 @source "../.flowbite-react/class-list.json";
 
 @plugin "flowbite/plugin";
+@plugin "@tailwindcss/forms";
 @source "../node_modules/flowbite-react/dist/esm/**/*.mjs";
 
 @custom-variant dark (&:where(.dark, .dark *));
