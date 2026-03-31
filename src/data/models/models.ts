@@ -9,7 +9,7 @@ export interface User {
   status: UserStatus;
   sexe: Sexe;
   roles: Role[];
-  created_at: BigInt;
+  created_at: Date;
 }
 
 export interface Role {
@@ -17,7 +17,7 @@ export interface Role {
   nom: string;
   description: string;
   status: boolean;
-  created_at: BigInt;
+  created_at: Date;
 }
 
 export enum UserStatus {
