@@ -1,13 +1,14 @@
 "use client";
 import { logoutAction } from "@/data/actions/auth";
 import { Navbar, DarkThemeToggle, NavbarBrand, NavbarToggle, Dropdown, DropdownItem, DropdownDivider } from "flowbite-react";
+import { RefreshCcw } from "lucide-react";
 import Image from "next/image";
 import { useActionState } from "react";
 import { FaBell } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import { RiMenuFold2Line, RiMenuFoldLine } from "react-icons/ri";
 
-export function AppNavbar({onChangeCollapsed, isCollapsed}:{onChangeCollapsed:()=>void, isCollapsed:boolean}) {
+export function AppNavbar({onChangeCollapsed, isCollapsed, onRefresh}:{onChangeCollapsed:()=>void, isCollapsed:boolean, onRefresh?:()=>void}) {
   const [state, action, pending] = useActionState(logoutAction, undefined)
   return (
     <div className={`fixed top-0 end-0 ${isCollapsed ? 'left-20' : 'left-64'} h-20 align-middle z-40 border-r bg-white/90 backdrop-blur-md border-b border-slate-200/15 shadow-sm transition-all duration-400`}>
@@ -24,12 +25,13 @@ export function AppNavbar({onChangeCollapsed, isCollapsed}:{onChangeCollapsed:()
         />
        <h6 className="text-3xl text-heading font-bold">ISIPA</h6>
       </div>
-     <div className="flex gap-3 items-center pr-4">
+     <div className="flex gap-5 items-center pr-4">
       <div className="flex gap-3">
-        <a href="#"><IoMdSettings size={23}/></a>
+        <RefreshCcw onClick={onRefresh} size={30} className="cursor-pointer"/>
+        <a href="#"><IoMdSettings size={30}/></a>
         <div>
           <Dropdown className="rounded-xl w-64" dismissOnClick={false} renderTrigger={() =>{
-            return <FaBell size={23} className="cursor-pointer" color="#ff00f6"/>;
+            return <FaBell size={30} className="cursor-pointer" color="#ff00f6"/>;
           }}>
              <DropdownItem>Profile</DropdownItem>
               <DropdownDivider />

@@ -12,6 +12,7 @@ import BreadCumbPage from '@/components/ui/BreadCumbPage';
 import { Plus } from 'lucide-react';
 import { Role, User } from '@/data/models/models';
 import { getUsersAction } from '@/data/actions/admins';
+import FullPageLoader from '@/components/ui/FullPageLoader';
 
 
 
@@ -24,6 +25,7 @@ export default function AgentsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [isLoading, setIsLoading] = useState(false);
 
   const filteredAgents = useMemo(() => {
     return agents.filter((agent) => {
@@ -42,12 +44,27 @@ export default function AgentsPage() {
   }, [searchTerm, agents, roleFilter, /* deptFilter */]);
 
   const fetchAgents = async () => {
-      const agents = await getUsersAction();
-      console.log('agents : ', agents)
+      setIsLoading(true);
+      const agents = await getUsersAction(); 
       if (agents) {
         setAgents(agents.agents);
         setRoles(agents.roles);
       }
+      setIsLoading(false);
+    };
+
+
+    const updateListAgents = (agent:User) => {
+      setAgents((prevAgents) => {
+         const updatedAgents = [...prevAgents];
+        const existingAgentIndex = prevAgents.findIndex((a) => a.id === agent.id);
+        if (existingAgentIndex !== -1) {
+          updatedAgents[existingAgentIndex] = agent;
+          return updatedAgents;
+        }
+        updatedAgents.unshift(agent);
+        return updatedAgents;
+      });
     };
 
 
@@ -71,7 +88,7 @@ export default function AgentsPage() {
 
 
   return (
-    <AppLayout pageTitle="Gestion d'utilisateur" actionHeader={actionHeader} title="Gestion d'utilisateur" subtitle="Consultez et gérez les professeurs, caissiers et le personnel administratif de l'institution.">
+    <AppLayout onRefresh={fetchAgents} pageTitle="Gestion d'utilisateur" actionHeader={actionHeader} title="Gestion d'utilisateur" subtitle="Consultez et gérez les professeurs, caissiers et le personnel administratif de l'institution.">
     <main className="max-w-6xl mx-auto w-full grow">
         <Filters 
           searchTerm={searchTerm} setSearchTerm={setSearchTerm}
@@ -93,9 +110,12 @@ export default function AgentsPage() {
         <StatsGrid stats={stats} />
         <AddUsersModal 
           isOpen={isModalOpen} 
+          roles={roles}
+          updateAgentsList={updateListAgents}
           onClose={() => setIsModalOpen(false)} 
         />
       </main>
+    <FullPageLoader loading={isLoading} />
     </AppLayout>
   );
 }

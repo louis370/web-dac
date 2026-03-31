@@ -10,27 +10,44 @@ const api = axios.create({
   },
 });
 
-// 1. Intercepteur de Requête : Ajoute le token à chaque appel
+// 🔥 Gestion globale
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+// 👉 Résout toutes les requêtes en attente
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
+// ============================
+// 1. REQUEST INTERCEPTOR
+// ============================
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
-// 2. Intercepteur de Réponse : Gère l'expiration (401)
+// ============================
+// 2. RESPONSE INTERCEPTOR
+// ============================
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log(
-      "Erreur interceptée:",
-      error.response?.status,
-      originalRequest.url,
-    );
 
-    // Si erreur 401 et que ce n'est pas déjà une tentative de refresh
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -38,36 +55,55 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
 
+      // 🔥 Si un refresh est déjà en cours
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: (token: string) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(api(originalRequest));
+            },
+            reject: (err: any) => reject(err),
+          });
+        });
+      }
+
+      isRefreshing = true;
+
       try {
-        // const refreshToken = useAuthStore.getState().refreshToken;
         const cookie = await getSession();
-        console.log("Session cookie:", cookie);
-        if (!cookie) {
-          useAuthStore.getState().logout();
-          return Promise.reject(error);
-        }
-        // Appel à NestJS pour rafraîchir le token
+        if (!cookie) throw new Error("No session");
+
         const res = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
-          {
-            refresh_token: cookie,
-          },
+          { refresh_token: cookie },
         );
 
-        const { access_token } = res.data;
+        const newToken = res.data.data.access_token;
 
-        // Mise à jour du store Zustand
-        useAuthStore.getState().setTokens(access_token);
+        if (!newToken) {
+          throw new Error("No access token returned");
+        }
 
-        // Relancer la requête initiale avec le nouveau token
-        originalRequest.headers.Authorization = `Bearer ${access_token}`;
+        // ✅ Mise à jour Zustand
+        useAuthStore.getState().setTokens(newToken);
+
+        // ✅ Réveille toutes les requêtes
+        processQueue(null, newToken);
+
+        // ✅ Met à jour la requête actuelle
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
         return api(originalRequest);
-      } catch (refreshError) {
-        // Si le refresh échoue aussi (ex: refresh token expiré), on déconnecte
+      } catch (err) {
+        processQueue(err, null);
         useAuthStore.getState().logout();
-        return Promise.reject(refreshError);
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
+
     return Promise.reject(error);
   },
 );
