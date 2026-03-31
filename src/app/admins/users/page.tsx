@@ -10,35 +10,54 @@ import AddUsersModal from '@/components/ui/AddUsersModal';
 import AppLayout from '@/components/layouts/AppLayout';
 import BreadCumbPage from '@/components/ui/BreadCumbPage';
 import { Plus } from 'lucide-react';
+import { Role, User } from '@/data/models/models';
+import { getUsersAction } from '@/data/actions/admins';
 
-const ITEMS_PER_PAGE = 4;
+
 
 export default function AgentsPage() {
+  const [agents, setAgents] = useState<User[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("Tous les rôles");
+  const [roleFilter, setRoleFilter] = useState<number | "Tous les rôles">("Tous les rôles");
   const [deptFilter, setDeptFilter] = useState("Tous les départements");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const filteredAgents = useMemo(() => {
-    return allAgents.filter((agent) => {
+    return agents.filter((agent) => {
       const matchesSearch =
-        agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        agent.id.toLowerCase().includes(searchTerm.toLowerCase());
+        agent.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        agent.postnom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        agent.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        agent.matricule?.toLowerCase().includes(searchTerm.toLowerCase()); 
+        const rolesId = agent.roles.map((r)=>r.id)
       const matchesRole =
-        roleFilter === "Tous les rôles" || agent.role === roleFilter;
-      const matchesDept =
-        deptFilter === "Tous les départements" || agent.dept === deptFilter;
-      return matchesSearch && matchesRole && matchesDept;
+        roleFilter === "Tous les rôles" || rolesId.includes(Number(roleFilter));
+      // const matchesDept =
+      //   deptFilter === "Tous les départements" || agent.dept === deptFilter;
+      return matchesSearch && matchesRole /* && matchesDept; */
     });
-  }, [searchTerm, roleFilter, deptFilter]);
+  }, [searchTerm, agents, roleFilter, /* deptFilter */]);
+
+  const fetchAgents = async () => {
+      const agents = await getUsersAction();
+      console.log('agents : ', agents)
+      if (agents) {
+        setAgents(agents.agents);
+        setRoles(agents.roles);
+      }
+    };
+
 
   useEffect(() => {
     setCurrentPage(1);
+    fetchAgents();
   }, [searchTerm, roleFilter, deptFilter]);
 
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedAgents = filteredAgents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedAgents = filteredAgents.slice(startIndex, startIndex + itemsPerPage);
 
   const actionHeader = (
     <button 
@@ -56,10 +75,9 @@ export default function AgentsPage() {
     <main className="max-w-6xl mx-auto w-full grow">
         <Filters 
           searchTerm={searchTerm} setSearchTerm={setSearchTerm}
-          roleFilter={roleFilter} setRoleFilter={setRoleFilter}
-          uniqueRoles={['Tous les rôles', ...new Set(allAgents.map(a => a.role))]}
-          deptFilter={deptFilter} setDeptFilter={setDeptFilter}
-          uniqueDepts={['Tous les départements', ...new Set(allAgents.map(a => a.dept))]}
+          roleFilter={roleFilter || "Tous les rôles"} setRoleFilter={setRoleFilter}
+          uniqueRoles={roles}
+          itemsPerPage={itemsPerPage} setItemsPerPage={setItemsPerPage}
         />
 
           <AgentsTable
@@ -67,9 +85,9 @@ export default function AgentsPage() {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             totalItems={filteredAgents.length}
-            totalPages={Math.ceil(filteredAgents.length / ITEMS_PER_PAGE)}
+            totalPages={Math.ceil(filteredAgents.length / itemsPerPage)}
             startIndex={startIndex}
-            itemsPerPage={ITEMS_PER_PAGE}
+            itemsPerPage={itemsPerPage}
           />
 
         <StatsGrid stats={stats} />

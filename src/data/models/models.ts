@@ -3,11 +3,12 @@ export interface User {
   nom: string;
   prenom: string;
   postnom: string;
+  matricule?: string;
   email: string;
   phone: string;
   status: UserStatus;
   sexe: Sexe;
-  role: Role[];
+  roles: Role[];
   created_at: BigInt;
 }
 

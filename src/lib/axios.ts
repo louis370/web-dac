@@ -1,12 +1,13 @@
-import axios from 'axios';
-import { useAuthStore } from '../store/authStore';
+import axios from "axios";
+import { useAuthStore } from "../store/authStore";
+import { getSession } from "./sessions";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
-  headers:{
-    'Content-Type': 'application/json',
-    'x-app-type': process.env.NEXT_PUBLIC_APP_TYPE || 'dac-dashboard',
-  }
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
+  headers: {
+    "Content-Type": "application/json",
+    "x-app-type": process.env.APP_TYPE || "dac-dashboard",
+  },
 });
 
 // 1. Intercepteur de Requête : Ajoute le token à chaque appel
@@ -23,24 +24,40 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log("Erreur interceptée:", error.response?.status, originalRequest.url);
+    console.log(
+      "Erreur interceptée:",
+      error.response?.status,
+      originalRequest.url,
+    );
 
     // Si erreur 401 et que ce n'est pas déjà une tentative de refresh
-   if (error.response?.status === 401 && !originalRequest._retry && !originalRequest._noRetry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest._noRetry
+    ) {
       originalRequest._retry = true;
-      
-      try {
-        const refreshToken = useAuthStore.getState().refreshToken;
-        
-        // Appel à NestJS pour rafraîchir le token
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`, {
-          refresh_token: refreshToken,
-        });
 
-        const { access_token, refresh_token } = res.data;
-        
+      try {
+        // const refreshToken = useAuthStore.getState().refreshToken;
+        const cookie = await getSession();
+        console.log("Session cookie:", cookie);
+        if (!cookie) {
+          useAuthStore.getState().logout();
+          return Promise.reject(error);
+        }
+        // Appel à NestJS pour rafraîchir le token
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
+          {
+            refresh_token: cookie,
+          },
+        );
+
+        const { access_token } = res.data;
+
         // Mise à jour du store Zustand
-        useAuthStore.getState().setTokens(access_token, refresh_token);
+        useAuthStore.getState().setTokens(access_token);
 
         // Relancer la requête initiale avec le nouveau token
         originalRequest.headers.Authorization = `Bearer ${access_token}`;
@@ -52,7 +69,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

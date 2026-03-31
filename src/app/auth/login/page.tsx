@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useActionState, useState } from "react";
 import { Mail, Lock, GraduationCap, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import ImageLogin from "@/assets/images/image-login.jpg";
@@ -7,54 +7,13 @@ import avatar1 from "@/assets/images/avatar1.jpg";
 import avatar2 from "@/assets/images/avatar2.jpg";
 import avatar3 from "@/assets/images/avatar3.jpg";
 import LogoDac from "@/assets/images/favicon.svg";
-import Link from "next/link";
-import { apiService } from "@/services/ApiService";
-import { APIResponse } from "@/lib/types";
-import { useAuthStore } from "@/store/authStore";
-import { navigate } from "next/dist/client/components/segment-cache/navigation";
-import { useRouter } from 'next/navigation';
+import Link from "next/link"; 
+import { loginAction } from "@/data/actions/auth";
 
 export default function page() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [state, action, pending] = useActionState(loginAction, undefined)
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const { setTokens, logout } = useAuthStore();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (!email || !password) {
-      setError("Tous les champs sont obligatoires");
-      return;
-    }
-    if (!email.includes("@")) {
-      setError("Email invalide");
-      return;
-    }
-
-    setLoading(true);
-    // Simuler une connexion (remplacer par logique réelle)
-    try {
-      const response = await apiService.put<APIResponse>("/auth/login", { email, password }, { isPublic: true });
-      setTokens(response.data.access_token, response.data.refresh_token);
-      router.push("/");
-    } catch(e:any) {
-    
-      if(e.response.status == 401) {
-        setError("Email ou mot de passe incorrect");
-      }else if(e.response.status == 404) {
-        setError("Utilisateur non trouvé");
-      } else {
-        setError("Une erreur est survenue. Veuillez réessayer.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
   return (
     <div className="bg-white w-full flex items-center justify-center overflow-y-hidden my-8">
       <div className="bg-white shadow-sm w-full max-w-4xl rounded-2xl flex overflow-hidden">
@@ -108,7 +67,7 @@ export default function page() {
           </div>
         </div>
         <form
-          onSubmit={handleSubmit}
+          action={action}
           className="w-full md:w-1/2 h-full flex flex-col items-center justify-center bg-white"
         >
           <div className="w-full p-4 mt-4 flex items-center justify-around">
@@ -130,9 +89,9 @@ export default function page() {
             <p className="mb-6 text-sm text-gray-600">
               Veuillez saisir vos identifiants pour accéder à votre tableau de bord.
             </p>
-            {error && (
+            {state?.message && (
               <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                {error}
+                {state.message}
               </div>
             )}
             <div className="space-y-2">
@@ -143,9 +102,9 @@ export default function page() {
                 <Mail size={20} className="text-gray-500 shrink-0" />
                 <input
                   type="email"
+                  name="email"
+                  id="email"
                   placeholder="ex: jean.dupont@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-transparent py-4 pl-3 outline-none border-none ring-0 focus:ring-0 text-gray-700 placeholder:text-gray-500 font-medium"
                 />
               </div>
@@ -167,8 +126,8 @@ export default function page() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Mot de passe"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
+                  id="password"
                   className="w-full bg-transparent py-4 pl-3 outline-none border-none ring-0 focus:ring-0 text-gray-700 placeholder:text-gray-500 font-medium"
                 />
                 {showPassword ? (
@@ -194,10 +153,10 @@ export default function page() {
             </div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={pending}
               className="w-full cursor-pointer bg-primary text-white font-semibold rounded-lg py-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Connexion en cours..." : "Se connecter"}
+              {pending ? "Connexion en cours..." : "Se connecter"}
             </button>
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 mt-2">
