@@ -1,9 +1,10 @@
+import { User } from '@/data/models/models';
 import { Pencil, Ban, Trash2, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function UsersTable({ 
   agents, currentPage, setCurrentPage, 
   totalItems, totalPages, startIndex, itemsPerPage 
-}: any) {
+}: {agents:User[], currentPage: number, setCurrentPage: any, totalItems: number, totalPages: number, startIndex: number, itemsPerPage: number}) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
       <div className="overflow-x-auto">
@@ -12,7 +13,7 @@ export default function UsersTable({
             <tr className="border-b border-gray-100 text-primary text-xs font-bold uppercase tracking-wider bg-white">
               <th className="py-5 px-6">Nom de l'agent</th>
               <th className="py-5 px-6">Rôle</th>
-              <th className="py-5 px-6">Département</th>
+              {/* <th className="py-5 px-6">Département</th> */}
               <th className="py-5 px-6">E-mail</th>
               <th className="py-5 px-6">Actions</th>
             </tr>
@@ -26,19 +27,29 @@ export default function UsersTable({
                       {agent.initials}
                     </div>
                     <div>
-                      <div className="font-bold text-gray-900 whitespace-nowrap">{agent.name}</div>
-                      <div className="text-xs text-primary/70 font-medium">ID: {agent.id}</div>
+                      <div className="font-bold text-gray-900 whitespace-nowrap">{agent.nom} {agent.postnom}<br/>{agent.prenom}</div>
+                      <div className="text-xs text-primary/70 font-medium">Matricule: {agent.matricule}</div>
                     </div>
                   </td>
                   <td className="py-4 px-6">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {agent.roles.map((r: any) => (
+                      <p key={r.id} className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap
+                        ${r.nom === 'Professeur' ? 'bg-blue-50 text-blue-600' :
+                          r.nom === 'Caissier' ? 'bg-green-50 text-green-600' :
+                          'bg-purple-50 text-purple-600'}`}>
+                        {r.nom}
+                      </p>
+                    ))}
+                    </div>
+                    {/* <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap
                       ${agent.role === 'Professeur' ? 'bg-blue-50 text-blue-600' : 
                         agent.role === 'Caissier' ? 'bg-green-50 text-green-600' : 
                         'bg-purple-50 text-purple-600'}`}>
                       {agent.role}
-                    </span>
+                    </span> */}
                   </td>
-                  <td className="py-4 px-6 text-sm font-medium text-gray-700 whitespace-nowrap">{agent.dept}</td>
+                  {/* <td className="py-4 px-6 text-sm font-medium text-gray-700 whitespace-nowrap">{agent.dept}</td> */}
                   <td className="py-4 px-6 text-sm text-primary whitespace-nowrap">{agent.email}</td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">

@@ -1,11 +1,14 @@
 "use client";
+import { logoutAction } from "@/data/actions/auth";
 import { Navbar, DarkThemeToggle, NavbarBrand, NavbarToggle, Dropdown, DropdownItem, DropdownDivider } from "flowbite-react";
 import Image from "next/image";
+import { useActionState } from "react";
 import { FaBell } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import { RiMenuFold2Line, RiMenuFoldLine } from "react-icons/ri";
 
 export function AppNavbar({onChangeCollapsed, isCollapsed}:{onChangeCollapsed:()=>void, isCollapsed:boolean}) {
+  const [state, action, pending] = useActionState(logoutAction, undefined)
   return (
     <div className={`fixed top-0 end-0 ${isCollapsed ? 'left-20' : 'left-64'} h-20 align-middle z-40 border-r bg-white/90 backdrop-blur-md border-b border-slate-200/15 shadow-sm transition-all duration-400`}>
      <div className="flex pl-4 pe-8 justify-between w-full h-full  items-center align-middle">
@@ -55,7 +58,10 @@ export function AppNavbar({onChangeCollapsed, isCollapsed}:{onChangeCollapsed:()
         </a>}>
       <DropdownItem>Profile</DropdownItem>
        <DropdownDivider />
-      <DropdownItem>Se déconnecter</DropdownItem>
+      <DropdownItem onClick={()=>{
+        console.log("Logout")
+        logoutAction();
+      }}>Se déconnecter</DropdownItem>
     </Dropdown>
       
      </div>

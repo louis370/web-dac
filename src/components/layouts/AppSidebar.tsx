@@ -12,10 +12,10 @@ import { FolderOpen, icons, LayoutDashboard } from "lucide-react";
 export function AppSidebar({isCollapsed,}:{isCollapsed:boolean}) {
   const pathname = usePathname()
   const liens =[
-    {title:"Tableau de bord", link:'/', icon:HiChartPie},
-    {title:"Agents universitaire", link:'/admins/users', icon:HiUsers},
-    {title:"Tableau de bord", link:'/dossiers', icon:LayoutDashboard},
-    {title:"Dossiers à traiter", link:'/dossiers/liste_dossiers', icon:FolderOpen}
+    {id:1,title:"Tableau de bord", link:'/', icon:HiChartPie},
+    {id:2,title:"Agents universitaire", link:'/admins/users', icon:HiUsers},
+    {id:3,title:"Tableau de bord", link:'/dossiers', icon:LayoutDashboard},
+    {id:4,title:"Dossiers à traiter", link:'/dossiers/liste_dossiers', icon:FolderOpen}
   ]
   return (
     <aside className={`${isCollapsed ? 'w-20' : 'w-64'} fixed h-screen transition-all duration-400 bg-white/90 backdrop-blur-md shadow-sm `}>
@@ -38,7 +38,7 @@ export function AppSidebar({isCollapsed,}:{isCollapsed:boolean}) {
     <div className="h-full flex flex-col gap-3 px-4 py-6 overflow-x-hidden overflow-y-auto w-full">
         {
                 liens.map((l)=>
-            <SidebarItemCustomise isCollapsed={isCollapsed} icon={l.icon} href={l.link} label={l.title} isLinked={pathname==l.link}/>)
+            <SidebarItemCustomise key={l.id} isCollapsed={isCollapsed} icon={l.icon} href={l.link} label={l.title} isLinked={pathname==l.link}/>)
               }
     </div>
        </aside>
