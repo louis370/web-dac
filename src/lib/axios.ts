@@ -5,7 +5,7 @@ const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
   headers:{
     'Content-Type': 'application/json',
-    'x-app-type': 'dac-dashboard',
+    'x-app-type': process.env.NEXT_PUBLIC_APP_TYPE || 'dac-dashboard',
   }
 });
 
