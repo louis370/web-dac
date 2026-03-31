@@ -8,14 +8,20 @@ import avatar2 from "@/assets/images/avatar2.jpg";
 import avatar3 from "@/assets/images/avatar3.jpg";
 import LogoDac from "@/assets/images/favicon.svg";
 import Link from "next/link";
-
+import { apiService } from "@/services/ApiService";
+import { APIResponse } from "@/lib/types";
+import { useAuthStore } from "@/store/authStore";
+import { navigate } from "next/dist/client/components/segment-cache/navigation";
+import { useRouter } from 'next/navigation';
 
 export default function page() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { setTokens, logout } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,11 +39,18 @@ export default function page() {
     setLoading(true);
     // Simuler une connexion (remplacer par logique réelle)
     try {
-      // await loginUser({ email, password });
-      console.log("Connexion avec", email, password);
-      // Redirection ou autre logique après connexion
-    } catch {
-      setError("Erreur de connexion");
+      const response = await apiService.put<APIResponse>("/auth/login", { email, password }, { isPublic: true });
+      setTokens(response.data.access_token, response.data.refresh_token);
+      router.push("/");
+    } catch(e:any) {
+    
+      if(e.response.status == 401) {
+        setError("Email ou mot de passe incorrect");
+      }else if(e.response.status == 404) {
+        setError("Utilisateur non trouvé");
+      } else {
+        setError("Une erreur est survenue. Veuillez réessayer.");
+      }
     } finally {
       setLoading(false);
     }
@@ -203,3 +216,5 @@ export default function page() {
     </div>
   );
 }
+
+

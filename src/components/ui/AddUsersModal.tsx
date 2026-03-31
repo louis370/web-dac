@@ -1,8 +1,21 @@
-import { useEffect } from 'react';
-import { X, User, Mail, Briefcase, Building2, Fingerprint, Key, ArrowRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { X, User, Mail, Briefcase, Building2, Fingerprint, Key, ArrowRight, Phone } from 'lucide-react';
+import { Role } from '@/data/models/models';
+import { APIResponse } from '@/lib/types';
+import { apiService } from '@/services/ApiService';
 
-export default function AddUsersModal({ isOpen, onClose }: any) {
+export default function AddUsersModal({ isOpen, onClose }: {isOpen: boolean, onClose: () => void,}) {
+  const [rolesList, setRolesList] = useState<Role[]>([]);
+  const getRoles = async () => {
+    try {
+      const response = await apiService.get<APIResponse>('/roles');
+      setRolesList(response.data);
+    }catch{
+      setRolesList([]);
+    }
+    }  
   useEffect(() => {
+    getRoles();
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -37,37 +50,61 @@ export default function AddUsersModal({ isOpen, onClose }: any) {
 
         {/* Formulaire */}
         <form className="p-8 pt-2 space-y-6" onSubmit={(e) => e.preventDefault()}>
-          
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 ml-1">Nom complet</label>
+           <div className="space-y-2">
+            <label className="text-sm font-bold text-gray-700 ml-1">Nom</label>
             <div className="flex items-center bg-primary/5 rounded-2xl px-5 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
               <User size={20} className="text-primary/40 shrink-0" />
-              <input type="text" placeholder="ex: Jean Dupont" className="w-full bg-transparent py-4 pl-3 outline-none border-none ring-0 focus:ring-0 text-gray-700 placeholder:text-primary/20 font-medium" />
+              <input type="text" placeholder="ex: Mopao" className="w-full bg-transparent py-4 pl-3 outline-none border-none ring-0 focus:ring-0 text-gray-700 placeholder:text-primary/20 font-medium" />
             </div>
+          </div>
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-gray-700 ml-1">Postnom</label>
+            <div className="flex items-center bg-primary/5 rounded-2xl px-5 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+              <User size={20} className="text-primary/40 shrink-0" />
+              <input type="text" placeholder="ex: Kilolo" className="w-full bg-transparent py-4 pl-3 outline-none border-none ring-0 focus:ring-0 text-gray-700 placeholder:text-primary/20 font-medium" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-gray-700 ml-1">Prénom</label>
+            <div className="flex items-center bg-primary/5 rounded-2xl px-5 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+              <User size={20} className="text-primary/40 shrink-0" />
+              <input type="text" placeholder="ex: Jean" className="w-full bg-transparent py-4 pl-3 outline-none border-none ring-0 focus:ring-0 text-gray-700 placeholder:text-primary/20 font-medium" />
+            </div>
+          </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 ml-1">Adresse e-mail institutionnelle</label>
+            <label className="text-sm font-bold text-gray-700 ml-1">Adresse e-mail</label>
             <div className="flex items-center bg-primary/5 rounded-2xl px-5 transition-all">
               <Mail size={20} className="text-primary/40 shrink-0" />
               <input type="email" placeholder="nom.prenom@dac.edu" className="w-full bg-transparent py-4 pl-3 outline-none border-none ring-0 focus:ring-0 text-gray-700 placeholder:text-primary/20 font-medium" />
             </div>
           </div>
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-gray-700 ml-1">Numéro de téléphone</label>
+            <div className="flex items-center bg-primary/5 rounded-2xl px-5 transition-all">
+              <Phone size={20} className="text-primary/40 shrink-0" />
+              <input type="tel" placeholder="ex: +243 999 999 999" className="w-full bg-transparent py-4 pl-3 outline-none border-none ring-0 focus:ring-0 text-gray-700 placeholder:text-primary/20 font-medium" />
+            </div>
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> */}
             <div className="space-y-2">
               <label className="text-sm font-bold text-gray-700 ml-1">Rôle</label>
               <div className="flex items-center bg-primary/5 rounded-2xl px-5">
                 <Briefcase size={20} className="text-primary/40 shrink-0" />
                 <select className="w-full bg-transparent py-4 pl-2 outline-none border-none ring-0 focus:ring-0 text-gray-700 cursor-pointer appearance-none font-medium">
                   <option>Sélectionner un rôle</option>
-                  <option>Professeur</option>
-                  <option>Caissier</option>
-                  <option>Administration</option>
+                  {rolesList.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.nom}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="text-sm font-bold text-gray-700 ml-1">Département</label>
               <div className="flex items-center bg-primary/5 rounded-2xl px-5">
                 <Building2 size={20} className="text-primary/40 shrink-0" />
@@ -78,15 +115,15 @@ export default function AddUsersModal({ isOpen, onClose }: any) {
                 </select>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 ml-1">Matricule / ID Agent</label>
             <div className="flex items-center bg-primary/5 rounded-2xl px-5">
               <Fingerprint size={20} className="text-primary/40 shrink-0" />
               <input type="text" placeholder="ex: AG-2024-XXX" className="w-full bg-transparent py-4 pl-3 outline-none border-none ring-0 focus:ring-0 text-gray-700 placeholder:text-primary/20 font-medium" />
             </div>
-          </div>
+          </div> */}
 
           <div className="flex items-center justify-between bg-primary/5 p-5 rounded-2xl">
             <div className="flex items-center gap-3">
